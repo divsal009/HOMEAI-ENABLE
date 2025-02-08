@@ -9,51 +9,14 @@ Original file is located at
 <a href="https://colab.research.google.com/github/divsal009/div/blob/master/HOMEAI_LLM.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 """
 
-!pip install fastapi uvicorn pyngrok pandas fuzzywuzzy transformers nest_asyncio
-
-!pip install transformers
-
-!pip install fuzzywuzzy
-
-!pip install flask flask-ngrok fuzzywuzzy transformers
-
-!pip install pyngrok
-
-!pip install flask flask-ngrok pandas fuzzywuzzy transformers
-
-!pip install fastapi uvicorn nest_asyncio pyngrok
-
-!pip install python-Levenshtein
-
-!ngrok config add-authtoken 2pi17RYPIkF3FyQFq4LL2dKzZCi_7c8B2Cxa8bzdg8MK8cayd
-
-!pip install python-multipart
-
-!pip install transformers fastapi uvicorn pandas fuzzywuzzy
-
-!pip install nest_asyncio
-
-import nest_asyncio
-nest_asyncio.apply()
-
-!pip install pyngrok
 
 import nltk
 nltk.download('wordnet')
+from fastapi.staticfiles import StaticFiles
 
-#final
+# Ensure static files like images & CSS load correctly
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-!pip install --upgrade openai
-
-!pip install transformers safetensors
-
-!pkill ngrok
-
-!ngrok authtoken 2pjMoSbKYmHgY4HIYgs3CgIgmDE_5HWzBaVMGPj6vbEC9xUkT
-
-!pip install openai
-
-#method11
 
 import random
 from transformers import pipeline
