@@ -12,22 +12,13 @@ Original file is located at
 
 import nltk
 nltk.download('wordnet')
-from fastapi.staticfiles import StaticFiles
-
-# Ensure static files like images & CSS load correctly
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-
-# Create FastAPI app instance **before** mounting static files
-app = FastAPI()
-
-# Mount static folder
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 import random
 from transformers import pipeline
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+
+
 
 # Initialize Hugging Face text generation pipeline
 generator = pipeline("text2text-generation", model="google/flan-t5-small")
@@ -172,11 +163,35 @@ from transformers import pipeline
 import nltk
 from nltk.corpus import wordnet
 
+
+import nltk
+import random
+import os
+import requests
+import pandas as pd
+import re
+from fuzzywuzzy import fuzz, process
+from fastapi import FastAPI, Form
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+from transformers import pipeline
+import nest_asyncio
+from nltk.corpus import wordnet
+
+# ✅ Download NLP resources
+nltk.download('wordnet')
+nltk.download('stopwords')
+
+# ✅ Initialize FastAPI app
+app = FastAPI()
+
+# ✅ Mount static directory
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
 # Apply nest_asyncio for compatibility
 nest_asyncio.apply()
 
-# Initialize FastAPI app
-app = FastAPI()
 
 # Load the Excel data
 #file_path = "/content/DatasetfinaldivyaJan24.xlsx"
