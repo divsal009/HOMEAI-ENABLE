@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pyngrok
+pandas
+fuzzywuzzy
+transformers
+nest_asyncio
+python-Levenshtein
+flask
+flask-ngrok
+nltk
+openai
+safetensors
+requests
+gdown
+openpyxl
