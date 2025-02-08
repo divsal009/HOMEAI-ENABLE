@@ -1131,20 +1131,4 @@ public_url = ngrok.connect(8000)
 print(f"Public URL: {public_url}")
 uvicorn.run(app, host="127.0.0.1", port=8000)
 
-# Configure Git with your GitHub username and email
-!git config --global user.name "divsal009"
-!git config --global user.email "divsal009@gmail.com"
 
-# Remove existing remote origin (if any) to avoid conflicts
-!git remote remove origin || echo "No existing remote found"
-
-# Add the correct GitHub repository with authentication (Replace YOUR_GITHUB_TOKEN)
-!git remote add origin https://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@github.com/divsal009/fastapi-app.git
-
-# Add all files, commit, and push to GitHub
-!git add .
-!git commit -m "Updated FastAPI project"
-!git branch -M main
-!git push -u origin main
-
-!curl -fsSL https://get.deta.dev/space-cli.sh | sh
