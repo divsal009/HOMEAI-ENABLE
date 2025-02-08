@@ -215,6 +215,12 @@ download_file(muscular_url, "Musular_Distrophy27Jan.xlsx")
 file_path = "DatasetfinaldivyaJan24.xlsx"
 file_path2 = "Musular_Distrophy27Jan.xlsx"
 
+
+# ✅ Specify engine explicitly
+excel_data = pd.ExcelFile(file_path, engine="openpyxl")  # For .xlsx files
+# If using .xls files, use: engine="xlrd"
+
+
 if not os.path.exists(file_path):
     raise FileNotFoundError("The dataset file was not found at the specified path.")
 
