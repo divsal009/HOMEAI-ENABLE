@@ -17,6 +17,14 @@ from fastapi.staticfiles import StaticFiles
 # Ensure static files like images & CSS load correctly
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+
+# Create FastAPI app instance **before** mounting static files
+app = FastAPI()
+
+# Mount static folder
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 import random
 from transformers import pipeline
