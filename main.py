@@ -164,8 +164,6 @@ import nltk
 from nltk.corpus import wordnet
 
 
-import nltk
-import random
 import os
 import requests
 import pandas as pd
@@ -174,8 +172,9 @@ from fuzzywuzzy import fuzz, process
 from fastapi import FastAPI, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
-from transformers import pipeline
 import nest_asyncio
+from transformers import pipeline
+import nltk
 from nltk.corpus import wordnet
 
 # ✅ Download NLP resources
@@ -188,54 +187,56 @@ app = FastAPI()
 # ✅ Mount static directory
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
-# Apply nest_asyncio for compatibility
+# ✅ Apply nest_asyncio for compatibility
 nest_asyncio.apply()
 
+# ✅ Ensure dependencies are installed
+try:
+    import openpyxl
+except ImportError:
+    os.system("pip install openpyxl")
 
-# Load the Excel data
-#file_path = "/content/DatasetfinaldivyaJan24.xlsx"
+# ✅ URLs to your dataset files on GitHub (update with your actual repo)
+dataset_url = "https://raw.githubusercontent.com/divsal009/HOMEAI-ENABLE/main/DatasetfinaldivyaJan24.xlsx"
+muscular_url = "https://raw.githubusercontent.com/divsal009/HOMEAI-ENABLE/main/Musular_Distrophy27Jan.xlsx"
 
-
-# URLs to your dataset files on GitHub
-dataset_url = "https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/YOUR_REPO/main/DatasetfinaldivyaJan24.xlsx"
-muscular_url = "https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/YOUR_REPO/main/Musular_Distrophy27Jan.xlsx"
-
-# Download and save files
+# ✅ Function to download datasets
 def download_file(url, filename):
     response = requests.get(url)
-    with open(filename, "wb") as file:
-        file.write(response.content)
+    if response.status_code == 200:
+        with open(filename, "wb") as file:
+            file.write(response.content)
+        print(f"✅ Downloaded {filename} successfully.")
+    else:
+        raise FileNotFoundError(f"❌ Failed to download {filename} from {url}")
 
-# Download datasets
-download_file(dataset_url, "DatasetfinaldivyaJan24.xlsx")
-download_file(muscular_url, "Musular_Distrophy27Jan.xlsx")
-
-# Load data
+# ✅ Download datasets if they do not exist
 file_path = "DatasetfinaldivyaJan24.xlsx"
-file_path2 = "Musular_Distrophy27Jan.xlsx"
-
-
-# ✅ Specify engine explicitly
-excel_data = pd.ExcelFile(file_path, engine="openpyxl")  # For .xlsx files
-# If using .xls files, use: engine="xlrd"
-
+file_path2 = "Musular_Dystrophy27Jan.xlsx"
 
 if not os.path.exists(file_path):
-    raise FileNotFoundError("The dataset file was not found at the specified path.")
-
-# Read Excel Sheets
-excel_data = pd.ExcelFile(file_path)
-disease_bodyfn_df = excel_data.parse('30-10-DISEASE VS BODYFN')
-bodyfn_assistive_df = excel_data.parse('31-10 BODYFN vs assistive techn')
-bodyfn_home_icf_df = excel_data.parse('31-10 BODYFN vs HOME ICF')
-
-
-# Load the Excel data
-#file_path2 = "/content/Musular_Distrophy27Jan.xlsx"
+    download_file(dataset_url, file_path)
 if not os.path.exists(file_path2):
-    raise FileNotFoundError("The dataset file was not found at the specified path.")
+    download_file(muscular_url, file_path2)
 
+# ✅ Verify that files exist before proceeding
+if not os.path.exists(file_path) or not os.path.exists(file_path2):
+    raise FileNotFoundError("❌ One or more dataset files were not found!")
+
+# ✅ Load data using explicit `openpyxl` engine
+try:
+    excel_data = pd.ExcelFile(file_path, engine="openpyxl")
+    disease_bodyfn_df = excel_data.parse('30-10-DISEASE VS BODYFN')
+    bodyfn_assistive_df = excel_data.parse('31-10 BODYFN vs assistive techn')
+    bodyfn_home_icf_df = excel_data.parse('31-10 BODYFN vs HOME ICF')
+
+    excel_data2 = pd.ExcelFile(file_path2, engine="openpyxl")
+    md_activity_part_df = excel_data2.parse('Activity_Part')
+    md_housing_adapt_df = excel_data2.parse('HouFac_Adapatn')
+
+    print("✅ Excel files loaded successfully.")
+except Exception as e:
+    raise RuntimeError(f"❌ Error loading Excel files: {e}")
 # Read Excel Sheets
 excel_data = pd.ExcelFile(file_path2)
 
