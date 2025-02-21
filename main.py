@@ -819,29 +819,75 @@ async def disease_post(disease_name: str = Form(...)):
             </div>
             """
 
+
     if matched_symptom:
-        # Handle symptoms independently
-        assistive_info = bodyfn_assistive_df[bodyfn_assistive_df['Symptoms'] == matched_symptom]
-        home_info = bodyfn_home_icf_df[bodyfn_home_icf_df['Symptoms'] == matched_symptom]
+    # Clean symptom input
+    matched_symptom_cleaned = preprocess_text(matched_symptom)
 
-        assistive_tech = assistive_info['Assistive Technology'].values[0] if not assistive_info.empty else "No assistive technology available"
-        home_adaptations = ", ".join(home_info['Home functions'].dropna().tolist()) if not home_info.empty else "No home adaptations available"
+    # Search with flexible matching
+    assistive_info = bodyfn_assistive_df[
+        bodyfn_assistive_df['Symptoms'].str.contains(matched_symptom_cleaned, case=False, na=False)
+    ]
 
-        # Generate varied symptom opening and suggestions for assistive tech and home adaptations
-        opening_sentence = generate_symptom_opening(matched_symptom)
-        assistive_tech_text = get_dynamic_assistive_text(assistive_tech)
-        home_adaptations_text = get_dynamic_home_adaptation_text(home_adaptations)
+    home_info = bodyfn_home_icf_df[
+        bodyfn_home_icf_df['Symptoms'].str.contains(matched_symptom_cleaned, case=False, na=False)
+    ]
 
-        response += f"""
-        <div class='result-container'>
-            <h2>Symptom: <strong>{matched_symptom.capitalize()}</strong></h2>
-            <p>{opening_sentence}</p>
-            <ul>
-                <li><strong>Assistive Technologies:</strong> {assistive_tech_text}</li>
-                <li><strong>Home Adaptations:</strong> {home_adaptations_text}</li>
-            </ul>
-        </div>
-        """
+    # Handle missing data safely
+    assistive_tech = (
+        assistive_info['Assistive Technology'].iloc[0]
+        if not assistive_info.empty else "No assistive technology available"
+    )
+
+    home_adaptations = (
+        ", ".join(home_info['Home functions'].dropna().tolist())
+        if not home_info.empty else "No home adaptations available"
+    )
+
+    # Generate response
+    response += f"""
+    <div class='result-container'>
+        <h2>Symptom: <strong>{matched_symptom_cleaned.capitalize()}</strong></h2>
+        <p>{generate_symptom_opening(matched_symptom_cleaned)}</p>
+        <ul>
+            <li><strong>Assistive Technologies:</strong> {get_dynamic_assistive_text(assistive_tech)}</li>
+            <li><strong>Home Adaptations:</strong> {get_dynamic_home_adaptation_text(home_adaptations)}</li>
+        </ul>
+    </div>
+    """
+else:
+    response += """
+    <div class='result-container'>
+        <h2>No match found.</h2>
+        <p>Please try using different words or rephrasing your symptom.</p>
+    </div>
+    """
+
+    
+
+    # if matched_symptom:
+    #     # Handle symptoms independently
+    #     assistive_info = bodyfn_assistive_df[bodyfn_assistive_df['Symptoms'] == matched_symptom]
+    #     home_info = bodyfn_home_icf_df[bodyfn_home_icf_df['Symptoms'] == matched_symptom]
+
+    #     assistive_tech = assistive_info['Assistive Technology'].values[0] if not assistive_info.empty else "No assistive technology available"
+    #     home_adaptations = ", ".join(home_info['Home functions'].dropna().tolist()) if not home_info.empty else "No home adaptations available"
+
+    #     # Generate varied symptom opening and suggestions for assistive tech and home adaptations
+    #     opening_sentence = generate_symptom_opening(matched_symptom)
+    #     assistive_tech_text = get_dynamic_assistive_text(assistive_tech)
+    #     home_adaptations_text = get_dynamic_home_adaptation_text(home_adaptations)
+
+    #     response += f"""
+    #     <div class='result-container'>
+    #         <h2>Symptom: <strong>{matched_symptom.capitalize()}</strong></h2>
+    #         <p>{opening_sentence}</p>
+    #         <ul>
+    #             <li><strong>Assistive Technologies:</strong> {assistive_tech_text}</li>
+    #             <li><strong>Home Adaptations:</strong> {home_adaptations_text}</li>
+    #         </ul>
+    #     </div>
+    #     """
 
     if not matched_disease and not matched_symptom:
         # Handle cases where no match is found
